@@ -49,3 +49,10 @@ functions:
       - httpApi:
           path: /create-meal
           method: POST
+
+  meals:
+    handler: src/functions/list-meals.handler
+    events:
+      - httpApi:
+          path: /meals
+          method: GET
