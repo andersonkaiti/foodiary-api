@@ -12,7 +12,7 @@ export const mealStatus = pgEnum('meal_status', [
   'uploading',
   'queued',
   'processing',
-  'succes',
+  'success',
   'failed',
 ])
 
