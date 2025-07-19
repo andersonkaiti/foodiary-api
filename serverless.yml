@@ -85,6 +85,14 @@ functions:
           existing: true
           forceDeploy: true
 
+  process-meal:
+    handler: src/functions/process-meal.handler
+    events:
+      - sqs:
+          arn: !GetAtt MealsQueue.Arn
+          batchSize: 1
+
+
 resources:
   Resources:
     UploadsBucket:
