@@ -29,11 +29,11 @@ export class SignUpController {
       })
     }
 
-    const userAlreadyExists = await db.query.user.findFirst({
+    const userAlreadyExists = await db.query.users.findFirst({
       columns: {
         email: true,
       },
-      where: eq(schema.user.email, data.account.email),
+      where: eq(schema.users.email, data.account.email),
     })
 
     if (userAlreadyExists) {
@@ -43,7 +43,7 @@ export class SignUpController {
     const { account, ...rest } = data
 
     const [user] = await db
-      .insert(schema.user)
+      .insert(schema.users)
       .values({
         ...account,
         ...rest,
@@ -53,7 +53,7 @@ export class SignUpController {
         proteins: 0,
       })
       .returning({
-        id: schema.user.id,
+        id: schema.users.id,
       })
 
     return created({
