@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm'
 import z from 'zod'
 import { db } from '../db'
 import { schema } from '../db/schemas/index'
+import { signAccessTokenFor } from '../lib/jwt'
 import type { HttpRequest, HttpResponse } from '../types/http'
 import { badRequest, conflict, created } from '../utils/http'
 
@@ -60,8 +61,10 @@ export class SignUpController {
         id: schema.users.id,
       })
 
+    const accessToken = signAccessTokenFor(user.id)
+
     return created({
-      userId: user.id,
+      accessToken,
     })
   }
 }
