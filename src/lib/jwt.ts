@@ -1,4 +1,4 @@
-import { sign } from 'jsonwebtoken'
+import { type JwtPayload, sign, verify } from 'jsonwebtoken'
 import { env } from '../config/env'
 
 export function signAccessTokenFor(userId: string) {
@@ -13,4 +13,14 @@ export function signAccessTokenFor(userId: string) {
   )
 
   return accessToken
+}
+
+export function validateAccessToken(token: string) {
+  try {
+    const { sub } = verify(token, env.JWT_SECRET) as JwtPayload
+
+    return sub ?? null
+  } catch {
+    return null
+  }
 }
