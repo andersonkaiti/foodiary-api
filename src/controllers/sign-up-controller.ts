@@ -1,8 +1,11 @@
+import { eq } from 'drizzle-orm'
 import z from 'zod'
+import { db } from '../db'
+import { schema } from '../db/schemas/index'
 import type { HttpRequest, HttpResponse } from '../types/http'
-import { badRequest, created } from '../utils/http'
+import { badRequest, conflict, created } from '../utils/http'
 
-const schema = z.object({
+const signUpSchema = z.object({
   goal: z.enum(['lose', 'maintain', 'gain']),
   gender: z.enum(['male', 'female']),
   birthDate: z.iso.date(),
@@ -18,7 +21,7 @@ const schema = z.object({
 
 export class SignUpController {
   static async handle({ body }: HttpRequest): Promise<HttpResponse> {
-    const { success, error, data } = schema.safeParse(body)
+    const { success, error, data } = signUpSchema.safeParse(body)
 
     if (!success) {
       return badRequest({
@@ -26,8 +29,35 @@ export class SignUpController {
       })
     }
 
+    const userAlreadyExists = await db.query.user.findFirst({
+      columns: {
+        email: true,
+      },
+      where: eq(schema.user.email, data.account.email),
+    })
+
+    if (userAlreadyExists) {
+      return conflict({ error: 'This email is already in use.' })
+    }
+
+    const { account, ...rest } = data
+
+    const [user] = await db
+      .insert(schema.user)
+      .values({
+        ...account,
+        ...rest,
+        calories: 0,
+        carbohydrates: 0,
+        fats: 0,
+        proteins: 0,
+      })
+      .returning({
+        id: schema.user.id,
+      })
+
     return created({
-      data,
+      userId: user.id,
     })
   }
 }
