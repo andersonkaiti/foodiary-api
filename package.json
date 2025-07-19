@@ -17,5 +17,8 @@
     "serverless-offline": "^14.4.0",
     "typescript": "^5.8.3",
     "ultracite": "5.0.46"
+  },
+  "dependencies": {
+    "zod": "^4.0.5"
   }
 }
